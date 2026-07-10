@@ -25,7 +25,7 @@ For background on what an APR is, see the top-level [`README.md`](../README.md).
 | [APR-003](APR-003-code-prompt-boundary.md) | — | A Code/Prompt Boundary Principle for Promptware | Draft | 0.1.3 |
 | [APR-004](APR-004-canonical-source.md) | — | A Canonical-Source and Materialization Principle for Runtime-Independent Promptware | Draft | 0.1.1 |
 | [APR-005](APR-005-trust-boundaries.md) | — | A Trust-Boundary and Untrusted-Input Principle for Promptware | Draft | 0.2.0 |
-| [APR-006](APR-006-composition-topology.md) | — | A Composition and Delegation-Topology Principle for Multi-Agent Promptware | Draft | 0.1.1 |
+| [APR-006](APR-006-composition-topology.md) | — | A Composition and Delegation-Topology Principle for Multi-Agent Promptware | Draft | 0.2.0 |
 | [APR-007](APR-007-pattern-mechanism.md) | — | A Pattern Principle for Reusable, Declaratively-Applied Promptware Behavior | Draft | 0.1.0 |
 | [APR-008](APR-008-artifact-lifecycle.md) | — | An Artifact-Lifecycle and Model-Migration Principle for Promptware | Draft | 0.2.0 |
 | [APR-009](APR-009-human-in-the-loop.md) | — | A Human-in-the-Loop Oversight-Placement Principle for Promptware | Draft | 0.1.0 |
