@@ -87,6 +87,13 @@ fields:
     values: [local-only, project-scoped, cross-project, external]
     status: active
     since: "APR-014 0.2.2"
+  - name: rationale
+    path: core.classification
+    owner: APR-023
+    type: enum
+    values: [compensatory, coordinating, mixed]
+    status: active
+    since: "APR-023 0.1.0"
 
   # ---------- core.composition ----------
   - name: applies_patterns
@@ -121,6 +128,12 @@ fields:
     type: string
     status: active
     since: "APR-008 0.1.0"
+  - name: calibrated_against
+    path: core.evaluation
+    owner: APR-023
+    type: object                   # { model, evidence } — required when rationale is compensatory/mixed
+    status: active
+    since: "APR-023 0.1.0"
 
   # ---------- core.provenance ----------
   - name: version
