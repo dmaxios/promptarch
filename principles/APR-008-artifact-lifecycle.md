@@ -1,16 +1,18 @@
 ---
 apr: 8
 title: "An Artifact-Lifecycle and Model-Migration Principle for Promptware"
-abstract: "Runtime artifacts carry an explicit lifecycle — versioned, status-tracked, deprecated with lineage, never silently changed — and declare the model they're validated against, so a model upgrade re-validates the prompt substrate via evals and blocks regression in safety-critical artifacts."
+abstract: "Runtime artifacts carry an explicit lifecycle — versioned, status-tracked, deprecated with lineage, never silently changed — and declare the model they're validated against, so a model change re-validates the prompt substrate via evals in both directions: blocking regression in safety-critical artifacts, and flagging over-caution gates a stronger model has outgrown."
 status: Draft
 class: architectural
-version: 0.1.0
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
+  - "Claude Sonnet 5 (Anthropic)"
+  - "Claude Fable 5 (Anthropic)"
 created: 2026-05-31
-last-updated: 2026-05-31
+last-updated: 2026-07-25
 audience: Architects and framework authors of agentic AI platforms; teams operating promptware across model upgrades or multiple models
 supersedes: []
 superseded-by: []
@@ -19,6 +21,7 @@ related:
   - APR-002
   - APR-003
   - APR-005
+  - APR-009
 tags:
   - lifecycle
   - versioning
@@ -29,7 +32,7 @@ tags:
 
 # APR-008 — An Artifact-Lifecycle and Model-Migration Principle for Promptware
 
-> **Runtime promptware artifacts have an explicit lifecycle — versioned, status-tracked, deprecated and superseded by discipline, never silently changed — and they declare the model they are validated against, so a model change triggers re-validation and migration, not silent regression.**
+> **Runtime promptware artifacts have an explicit lifecycle — versioned, status-tracked, deprecated and superseded by discipline, never silently changed — and they declare the model they are validated against, so a model change triggers re-validation and migration in both directions: no silent regression, and no silently stale over-caution gates.**
 
 *Injectable summary (for feeding to an LLM): [`digests/APR-008-artifact-lifecycle.md`](digests/APR-008-artifact-lifecycle.md). This full APR is canonical.*
 
@@ -85,7 +88,8 @@ When the model changes (upgrade or swap):
 - **The gate is tiered.** A regression below an artifact's `min_eval_score` on the new model:
   - **blocks the migration** for safety-critical artifacts (those declaring `safety_critical: true`, or gating consequential actions — see [APR-005](APR-005-trust-boundaries.md));
   - for all others, the migration ships **only with an ADR explicitly accepting** the regression (mirroring OBSERVE's eval-regression rule).
-- A model migration is therefore a **disciplined, eval-gated event with a recorded outcome** — never a silent, untested swap.
+- **Re-validation is bidirectional.** The regression gate above catches a new model making an artifact *worse*; the same event **SHOULD** also catch the opposite debt: gates and thresholds calibrated to a weaker model (`min_eval_score` values, approval tiers placed on eval performance) that the new model clears with wide margin are **flagged for recalibration** — loosening one is itself a version-bumped, recorded change under this APR, never a silent drift. Compensatory structure nobody re-benchmarks becomes dead weight; this clause makes it visible. In-corpus precedent: [APR-009](APR-009-human-in-the-loop.md)'s risk-weighted sampling already lowers review rate with track record. The boundary is strict, though — oversight placement by **reversibility and blast radius** (APR-009) is *not* capability-relative and **MUST NOT** be loosened on model-capability grounds: a stronger model does not shrink the blast radius of an irreversible action.
+- A model migration is therefore a **disciplined, eval-gated event with a recorded outcome** — never a silent, untested swap, and never a silent accumulation of stale gates.
 
 ## Prescription
 
@@ -94,6 +98,7 @@ When the model changes (upgrade or swap):
 - Artifacts **MUST** declare model validation via a platform baseline, overriding with `validated_against:` where model-sensitive; deprecation **MUST** carry a window and `superseded_by` lineage, and **MUST** migrate consumers before removal.
 - On a model change, the prompt substrate **MUST** be re-validated via evals; the deterministic substrate is exempt (APR-003).
 - An eval regression on the new model **MUST** block the migration for safety-critical artifacts and **MUST** require an ADR to proceed for others.
+- On a model change, eval-calibrated gates (`min_eval_score` thresholds, approval tiers placed on eval performance) **SHOULD** be re-benchmarked against the new model; loosening a stale gate **MUST** be a version-bumped, recorded change. Oversight placement by reversibility/blast radius (APR-009) **MUST NOT** be loosened on capability grounds.
 
 ## Governance and validation
 
@@ -106,6 +111,7 @@ A conformant platform checks, in review or CI:
 - **Deprecation discipline** — deprecated artifacts carry a window + lineage; consumers are flagged for migration; nothing is deleted with live consumers.
 - **Model validation recorded** — the platform baseline exists; model-sensitive artifacts pin `validated_against`.
 - **Migration gate** — on a model change, prompt-substrate evals run against the new model; regressions block safety-critical artifacts and require an ADR otherwise.
+- **Calibration review** — on a model change, eval-calibrated gates were re-benchmarked; any loosened gate is a version-bumped change with recorded rationale, and no blast-radius-placed oversight (APR-009) was loosened on capability grounds.
 
 ## What this principle is NOT
 
@@ -153,9 +159,11 @@ External sources referenced in this APR; see *Relationship to established patter
 - **Set the platform model baseline explicitly**, and pin `validated_against` only on the artifacts you know are model-sensitive — don't pin everything.
 - **Wire the migration gate into your eval CI**: on a model bump, re-run prompt-substrate evals against the new model before promoting it; block safety-critical regressions.
 - **Treat a model upgrade like a dependency upgrade** — a deliberate, tested, recorded event, not an ambient change.
+- **Use the migration event to audit both directions** — while the regression evals run, list the gates the new model clears with wide margin; recalibrate them deliberately (version-bumped) rather than letting compensatory structure fossilize.
 
 ## Change log
 
 | Version | Date | Status | Change |
-|---|---|---|---|
+| --- | --- | --- | --- |
+| 0.2.0 | 2026-07-25 | Draft | Made model-migration re-validation **bidirectional**: added the over-caution direction — eval-calibrated gates SHOULD be re-benchmarked on a model change, stale gates flagged and loosened only as version-bumped, recorded changes; blast-radius-placed oversight (APR-009) explicitly excluded from capability-relative loosening. Surfaced by the [model-capability-growth study](../docs/studies/2026-07-25-model-capability-growth.md). Added APR-009 to related. |
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-008. |
