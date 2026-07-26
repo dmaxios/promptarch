@@ -4,13 +4,14 @@ title: "A Graceful-Degradation and Failure-Handling Principle for Promptware"
 abstract: "When a tool errors, an injection is missing, a delegate times out, or the model is unavailable, handling is set by what the failure blocks: safety-critical paths fail closed, other paths degrade only via a declared bounded fallback, and no failure or degradation is ever silent."
 status: Draft
 class: architectural
-version: 0.2.0
+version: 0.3.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
+  - "Claude Fable 5 (Anthropic)"
 created: 2026-07-08
-last-updated: 2026-07-09
+last-updated: 2026-07-26
 audience: Architects and framework authors of agentic AI platforms; harness/runtime and SRE engineers handling tool, delegate, injection, and model failures; anyone hardening promptware for production
 supersedes: []
 superseded-by: []
@@ -69,11 +70,21 @@ The selector is the path's **irreversibility** and **blast radius**, with **dete
 | **Idempotent, transient** | **Retry** — under declared count/budget/time limits; ambiguous outcome ⇒ presume committed, do not blind-retry; on exhaustion fall through to fail-closed or the declared fallback. |
 | **Unclassified / unrecognized** | **Fail closed** — an unknown blast radius is treated as high; classification is a design-time property in code, never a runtime model judgment. |
 
+## Degrading a dependency edge
+
+The commonest degradable failure is a **missing input**: a consumer's declared dependency is absent when it runs. Field experience adds two disciplines to the general degrade rules:
+
+- **Only evidence edges may degrade; structural edges never do.** A dependency is **evidence** when the consumer reads it to *ground its claims* — its absence may reduce the output's **coverage** (fewer or weaker claims, each gap named). A dependency is **structural** when it *defines the consumer's unit of work* — without it the output is not degraded, it is **invented**, and the edge MUST stay hard. The classification is testable, not a matter of taste: a degraded output MUST validate against the **same output schema** as the full one; a shape change means the edge was mis-classified as degradable.
+- **Absence is diagnosed by the plan-holder, never by the consumer.** A missing input has several causes — deliberately not scheduled (a legitimate declared degradation), mis-ordered (a plan defect), produced-but-empty (an execution failure), present-but-stale — and **the consumer cannot distinguish them**, because only the component holding the plan can. The harness/orchestrator MUST resolve every dependency before dispatch and hand the consumer exactly one of two things: a concrete input, or an **explicit degradation instruction**. A consumer that infers the cause of a missing input at execution time is self-assessing a failure classification — the same violation the placement rule already forbids (composes [APR-003](APR-003-code-prompt-boundary.md)); mis-ordering and execution failure MUST halt, not degrade.
+
+Both compose with the existing rules: a degradation instructed this way is still declared, still marked at the artifact boundary, and still counts against the run-level budget.
+
 ## Prescription
 
 - A failure on an **irreversible, consequential, or unclassified** path MUST **fail closed** and MUST NOT proceed on a guessed value, a degraded substitute, or a silently-skipped check. (Generalizes APR-003 "halt, don't guess," OBSERVE strict-mode halt, APR-015 protected-tier halt.)
 - Fail-closed MUST be **enforced in code**: the harness MUST **constrain the action space** (not merely refuse one call and return an error string), so the model cannot invent an undeclared fallback by reaching for a different tool. Returning a fail-closed decision as free text the model may reinterpret is non-conformant.
 - The **handling mode MUST be selected by declared metadata** — irreversibility, blast radius, detectability (`safety_critical`, reversibility, blast radius — APR-009) — never by the agent's in-the-moment self-assessment (composes APR-003, APR-009). **Unclassified failures MUST fail closed** (unknown blast radius is treated as high).
+- A dependency edge MAY be declared degradable only when it is an **evidence** edge (absence reduces coverage); a **structural** edge (absence changes the output's shape) MUST stay hard — a degraded output MUST validate against the same output schema as the full one. **Absence MUST be resolved by the plan-holding harness before dispatch** — concrete input or explicit degradation instruction — and the consumer MUST NOT infer the cause of a missing input at execution time; mis-ordering and execution failure halt, they never degrade.
 - A failure on a **reversible** path MAY **degrade**, but only via a **declared fallback** that is **never less constrained than the path it replaces** — degradation reduces **capability, never guarantees**. A fallback that would weaken a safety property (e.g. the same operation minus its validator/policy-check) is a privilege escalation dressed as resilience; if the only available fallback would weaken a guarantee, the path **fails closed**. The fallback MUST NOT be model-improvised, and MUST NOT silently substitute a probabilistic value where a deterministic one failed (composes APR-003).
 - **Retry is a distinct governed mode**, permitted only for **idempotent** operations under a declared count/budget/time bound; a non-idempotent operation MUST NOT be blind-retried, and an **ambiguous outcome** (e.g. a write that timed out with unknown commit state) MUST be **presumed committed** for safety. Exhausting the bound MUST fall through to fail-closed or the declared fallback — never spin (composes APR-006 termination, APR-011 budget).
 - **Degradation is bounded per run, not only per failure.** Individually-bounded degradations compose into an out-of-spec aggregate; the platform MUST enforce a **run-level degradation budget**, and degradation state MUST be **sticky and monotone** across the run (it does not silently reset to full-fidelity on the next call). A run MUST define how it **recovers** from degraded state (a declared recovery gate), so a long-lived agent neither ratchets monotonically into uselessness nor quietly resumes nominal mode. Degradation MUST NOT reach the **failure-classification or guardrail machinery** itself (the floor).
@@ -102,6 +113,7 @@ The selector is the path's **irreversibility** and **blast radius**, with **dete
 - **Fail-closed enforced in code** — an error-injection test shows every irreversible/consequential path denies-and-constrains on dependency failure, never proceeds on a substitute, and does not merely return a routable error string (Tier 1 test harness; Tier 2 confirms the set is complete).
 - **Unclassified fails closed** — a path with no declared classification fails closed, not degrades (Tier 1).
 - **Fallbacks no weaker than primary** — every degrade path names a fallback from a canonical source that preserves the primary's safety properties; a would-be-weaker fallback fails closed instead (Tier 1 presence; Tier 2 judgment).
+- **Degradable edges are evidence-only** — a degradable dependency's degraded output validates against the same schema as its full output (Tier 1 schema test); structural edges are hard; absence is resolved by the plan-holder, never inferred by the consumer (Tier 2 review of dispatch protocol).
 - **Retry gated** — retries apply only to idempotent operations under a declared bound; ambiguous outcomes are presumed committed, not blind-retried (Tier 1 config; Tier 2 idempotency judgment).
 - **Run-level degradation budget** — degradation is sticky/monotone with a run budget and a declared recovery gate; degradation cannot reach the classification/guardrail machinery (Tier 1 budget; Tier 2 floor).
 - **No silent degradation (three audiences)** — failures + fallbacks are logged (operator), disclosed (user), and marked at the artifact boundary (downstream); a confabulation-over-empty-retrieval case is in the evals (Tier 1 marking; Tier 2 disclosure).
@@ -155,4 +167,5 @@ This APR introduces **no new component-metadata field**, consistent with APR-015
 | Version | Date | Status | Change |
 |---|---|---|---|
 | 0.1.0 | 2026-07-08 | Draft | Initial draft. Failure handling selected by declared safety-criticality: fail closed for safety-critical/consequential/irreversible paths, declared bounded fallback elsewhere, never silent. Unifies the six local halt rules (APR-002/003/005/006/011/015) as instances of one principle. |
+| 0.3.0 | 2026-07-26 | Draft | Added §Degrading a dependency edge: the **evidence vs. structural** degradability test (absence may reduce *coverage*, never change *shape*; schema-testable) and **plan-holder absence resolution** (the harness resolves every dependency before dispatch — concrete input or explicit degradation instruction; the consumer never infers the cause of a missing input). Surfaced by adopter field experience (SpecOrigin draft ADR-014, 2026-07-26). |
 | 0.2.0 | 2026-07-09 | Draft | Review-driven (feedback on the principle). Addressed the **model-in-the-loop**: fail-closed MUST be **enforced in code** and **constrain the action space**, not return a routable error string. Selector sharpened to **irreversibility + blast radius + detectability**; **unclassified fails closed** (fixed the residual-class inversion). Added **retry** as a distinct **idempotency-gated** mode, with **ambiguous-outcome ⇒ presume-committed**. Degradation made **run-level, sticky/monotone** with a declared **recovery gate** and a **floor** (never reach classification/guardrail machinery). Fallbacks MUST be **no weaker than the primary** (reduce capability, not guarantees). "Never silent" decomposed into **three audiences** + **confabulation** boundary-marking. **Escalation** given a timeout that **expires fail-closed**. Added `related:` APR-015/016. |

@@ -1,16 +1,17 @@
 ---
 apr: 9
 title: "A Human-in-the-Loop Oversight-Placement Principle for Promptware"
-abstract: "Place human oversight by reversibility and blast radius: irreversible/high-blast actions need plan-and-approve (gate before); reversible/low-blast use fire-and-judge (review after). Reversibility defaults to irreversible when unknown; safety-critical gates are never sampled away."
+abstract: "Place human oversight by reversibility and blast radius: irreversible/high-blast actions get plan-and-approve (before); reversible/low-blast get fire-and-judge (after). Unknown defaults to irreversible; safety floors are never sampled away; long runs batch questions to declared checkpoints."
 status: Draft
 class: architectural
-version: 0.1.0
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
+  - "Claude Fable 5 (Anthropic)"
 created: 2026-05-31
-last-updated: 2026-05-31
+last-updated: 2026-07-26
 audience: Architects of agentic systems that take consequential actions; framework authors building approval/review UX; teams in regulated or high-blast-radius domains
 supersedes: []
 superseded-by: []
@@ -19,6 +20,7 @@ related:
   - APR-003
   - APR-005
   - APR-006
+  - APR-017
 tags:
   - human-in-the-loop
   - oversight
@@ -96,6 +98,17 @@ The decision (approve / reject / modify) is recorded with the **approver's ident
 - record the **judgment** (accept / flag / correct) with the **reviewer's identity**;
 - **feed back** — corrections become eval cases ([APR-008](APR-008-artifact-lifecycle.md) / OBSERVE) and may become patterns ([APR-007](APR-007-pattern-mechanism.md)), so judgments improve the system rather than being discarded.
 
+## When judgment happens: scheduled checkpoints
+
+The placement rule says whether oversight sits *before* or *after* an action. For **long-running autonomous work** there is a third question the mode alone does not answer: *when* does the human interaction happen? Field experience gives the failure its sharpest form: a doctrine whose only permitted responses to "a human must decide something mid-run" are **silently skip** or **halt indefinitely** will produce one or the other — and one observed run spent 70% of its wall-clock span blocked on a single unbatched mid-run question.
+
+- **Oversight interaction points in a long-running run MUST be scheduled at plan time** and visible in what the human approves — the operator knows *before approving* where they will be asked. Execution stays non-interactive *between* checkpoints.
+- **Questions arising between checkpoints MUST be deferred and batched to the next checkpoint** — never surfaced ad hoc at unpredictable moments, and never silently dropped. Batching converts an unpredictable blocking interruption into one predictable interaction answerable in minutes.
+- A question whose action **cannot proceed unanswered** is not a checkpoint case — it follows [APR-017](APR-017-graceful-degradation.md)'s escalation discipline (a blocking wait with a declared timeout whose expiry fails closed). Checkpoints give *deferrable* decisions a scheduled home; they do not replace escalation for blocking ones.
+- Plan-and-approve **MAY be staged at phase boundaries**: approve the early phases, inspect what returns, then decide whether the later phases are warranted. Staging keeps a long plan's approval honest without shortening the plan.
+
+**Judging MAY be AI-assisted, under two hard conditions.** An unattended run may substitute an AI reviewer at a checkpoint, but (1) the substitute **MUST be an isolated dispatch that is not the producer** of the artifact under review — a model answering its own deferred questions is self-judging, the same violation as self-assessed reversibility — and (2) the substitution **MUST be recorded** as a judgment gap in the run record, and **MUST NOT count as the human review** anywhere the safety floor requires one. Automation and honesty stop competing: the unattended run is possible, and its record tells the truth about having been unattended.
+
 ## Avoiding approval fatigue
 
 Fatigue is real: a human who must approve everything stops reading and rubber-stamps, which is *worse* than no gate. The answer is **tunable levers under a hard safety floor** — cut fatigue by *not gating trivia*, never by lightening the gates that matter:
@@ -103,6 +116,7 @@ Fatigue is real: a human who must approve everything stops reading and rubber-st
 - **Thresholds** — do not gate actions below a declared blast-radius/cost threshold.
 - **Risk-weighted sampling** — fire-and-judge reviews a sample, with the rate rising with blast radius and falling with track record.
 - **Batching** — homogeneous low-stakes actions may be approved or judged as a batch.
+- **Anchoring** — *the anchor does the deciding*: a long plan presented with every item pre-checked is approved as-is nearly every time, so the concrete-diff rule alone does not prevent rubber-stamping. The approval surface SHOULD present the **minimal default selection** with the additions *offered* (expandable), not the maximal set pre-checked — same information, opposite default. Deselection MUST be **dependency-aware**: unchecking an item reports its cascade ("also drops X, Y — you lose your target"), so the human never approves a plan that cannot run.
 
 **The hard floor:** safety-critical or irreversible-high-blast actions are **NEVER** sampled-out or batched-away — they always get individual plan-and-approve.
 
@@ -113,7 +127,10 @@ Fatigue is real: a human who must approve everything stops reading and rubber-st
 - Plan-and-approve **MUST** show the human the concrete diff, intent, blast radius, and rollback plan, and record the approver's identity, **before** execution.
 - Fire-and-judge **MUST** capture the action, record the judgment with reviewer identity, and feed corrections back to evals/patterns; it **MUST** be used only for reversible actions.
 - The agent **MUST NOT** self-assess reversibility (APR-003); it is declared metadata.
-- Fatigue reduction (thresholds, sampling, batching) **MUST NOT** apply to safety-critical or irreversible-high-blast actions, which always receive individual approval.
+- Fatigue reduction (thresholds, sampling, batching, anchoring) **MUST NOT** apply to safety-critical or irreversible-high-blast actions, which always receive individual approval.
+- A long-running run **MUST** declare its oversight checkpoints at plan time; deferrable questions arising between checkpoints **MUST** batch to the next one; blocking questions follow APR-017 escalation. Ad hoc mid-run prompts and silently dropped questions are both non-conformant.
+- Approval surfaces **SHOULD** present the minimal plan as the default selection with additions offered; deselection **MUST** be dependency-aware.
+- An AI-substituted review **MUST** be an isolated, non-producer dispatch, **MUST** be recorded as a substitution in the run record, and **MUST NOT** satisfy the safety floor.
 
 ## Governance and validation
 
@@ -125,7 +142,9 @@ A conformant platform checks, in review or CI:
 - **Mode matches reversibility** — irreversible actions are gated before; reversible ones are reviewed after.
 - **Approval payload** — plan-and-approve records show the concrete diff and approver identity, not a summary.
 - **Judgment feedback** — fire-and-judge corrections are captured and routed to evals/patterns.
-- **Safety floor intact** — no sampling/batching/threshold path lets a safety-critical or irreversible-high-blast action skip individual approval.
+- **Safety floor intact** — no sampling/batching/threshold/anchoring path lets a safety-critical or irreversible-high-blast action skip individual approval.
+- **Checkpoints declared** — long-running runs show their oversight checkpoints in the approved plan; traces contain no unscheduled mid-run prompts and no dropped deferred questions.
+- **Substituted judgment recorded** — every AI-substituted review appears in the run record as a substitution, from an isolated non-producer dispatch, and never stands in where the safety floor requires a human.
 
 ## What this principle is NOT
 
@@ -177,5 +196,6 @@ External sources referenced in this APR; see *Relationship to established patter
 ## Change log
 
 | Version | Date | Status | Change |
-|---|---|---|---|
+| --- | --- | --- | --- |
+| 0.2.0 | 2026-07-26 | Draft | Added §When judgment happens: **scheduled checkpoints** for long-running runs (declared at plan time; deferrable questions batch to the next checkpoint; blocking ones follow APR-017 escalation; staged phase-boundary approval), and **AI-substituted judging** under two hard conditions (isolated non-producer dispatch; recorded substitution that never satisfies the safety floor). Added the **anchoring** fatigue lever (minimal default selection, dependency-aware deselection). Surfaced by adopter field experience (SpecOrigin draft ADRs 015/016, 2026-07-26). Added APR-017 to `related`. |
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-009. |
