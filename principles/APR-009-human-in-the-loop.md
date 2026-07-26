@@ -4,13 +4,12 @@ title: "A Human-in-the-Loop Oversight-Placement Principle for Promptware"
 abstract: "Place human oversight by reversibility and blast radius: irreversible/high-blast actions get plan-and-approve (before); reversible/low-blast get fire-and-judge (after). Unknown defaults to irreversible; safety floors are never sampled away; long runs batch questions to declared checkpoints."
 status: Draft
 class: architectural
-version: 0.2.1
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
   - "Claude Fable 5 (Anthropic)"
-  - "Claude Opus 5 (Anthropic; 1M context; via SpecOrigin field ADRs 014-016)"
 created: 2026-05-31
 last-updated: 2026-07-26
 audience: Architects of agentic systems that take consequential actions; framework authors building approval/review UX; teams in regulated or high-blast-radius domains
@@ -198,6 +197,5 @@ External sources referenced in this APR; see *Relationship to established patter
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
-| 0.2.1 | 2026-07-26 | Draft | Recorded transitive generative credit: the SpecOrigin field ADRs this revision draws on were drafted with Claude Opus 5 (Anthropic; 1M context). Frontmatter-only; no semantic change. |
 | 0.2.0 | 2026-07-26 | Draft | Added §When judgment happens: **scheduled checkpoints** for long-running runs (declared at plan time; deferrable questions batch to the next checkpoint; blocking ones follow APR-017 escalation; staged phase-boundary approval), and **AI-substituted judging** under two hard conditions (isolated non-producer dispatch; recorded substitution that never satisfies the safety floor). Added the **anchoring** fatigue lever (minimal default selection, dependency-aware deselection). Surfaced by adopter field experience (SpecOrigin draft ADRs 015/016, 2026-07-26). Added APR-017 to `related`. |
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-009. |
