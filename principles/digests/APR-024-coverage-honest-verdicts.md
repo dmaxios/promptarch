@@ -1,6 +1,6 @@
 # APR-024 — Coverage-Honest Verdicts — Digest
 
-> **Generated digest of [APR-024 — A Coverage-Honest Verdict Principle for Promptware](../APR-024-coverage-honest-verdicts.md) v0.1.1.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-024 — A Coverage-Honest Verdict Principle for Promptware](../APR-024-coverage-honest-verdicts.md) v0.1.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** Every verdict carries orthogonal severity (what was found) and coverage (what was examined), coverage computed from recorded gap facts over the check's input closure. A clean pass over an incomplete closure is inexpressible, and every gap names the action that would close it. Kills the vacuous pass.
 
@@ -34,4 +34,4 @@ Inexpressibility enforced mechanically (schema/code rejects complete+gaps) · ev
 Not a severity policy (the pass/fail bar stays with APR-010/021) · not a numeric coverage metric (enumerated facts, not a percentage) · not a blocking policy (visibility + propagation; blocking is the adopter's) · not APR-017's artifact marking (those marks *feed* the gaps; this governs what a *checker* may claim) · not a guarantee findings are correct (coverage honesty ≠ finding quality).
 
 ---
-*Source: [APR-024 — A Coverage-Honest Verdict Principle for Promptware](../APR-024-coverage-honest-verdicts.md) v0.1.1 · regenerate this digest whenever the source changes.*
+*Source: [APR-024 — A Coverage-Honest Verdict Principle for Promptware](../APR-024-coverage-honest-verdicts.md) v0.1.0 · regenerate this digest whenever the source changes.*

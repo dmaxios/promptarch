@@ -4,13 +4,12 @@ title: "A Graceful-Degradation and Failure-Handling Principle for Promptware"
 abstract: "When a tool errors, an injection is missing, a delegate times out, or the model is unavailable, handling is set by what the failure blocks: safety-critical paths fail closed, other paths degrade only via a declared bounded fallback, and no failure or degradation is ever silent."
 status: Draft
 class: architectural
-version: 0.3.1
+version: 0.3.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
   - "Claude Fable 5 (Anthropic)"
-  - "Claude Opus 5 (Anthropic; 1M context; via SpecOrigin field ADRs 014-016)"
 created: 2026-07-08
 last-updated: 2026-07-26
 audience: Architects and framework authors of agentic AI platforms; harness/runtime and SRE engineers handling tool, delegate, injection, and model failures; anyone hardening promptware for production
@@ -167,7 +166,6 @@ This APR introduces **no new component-metadata field**, consistent with APR-015
 
 | Version | Date | Status | Change |
 |---|---|---|---|
-| 0.3.1 | 2026-07-26 | Draft | Recorded transitive generative credit: the SpecOrigin field ADRs this revision draws on were drafted with Claude Opus 5 (Anthropic; 1M context). Frontmatter-only; no semantic change. |
 | 0.1.0 | 2026-07-08 | Draft | Initial draft. Failure handling selected by declared safety-criticality: fail closed for safety-critical/consequential/irreversible paths, declared bounded fallback elsewhere, never silent. Unifies the six local halt rules (APR-002/003/005/006/011/015) as instances of one principle. |
 | 0.3.0 | 2026-07-26 | Draft | Added §Degrading a dependency edge: the **evidence vs. structural** degradability test (absence may reduce *coverage*, never change *shape*; schema-testable) and **plan-holder absence resolution** (the harness resolves every dependency before dispatch — concrete input or explicit degradation instruction; the consumer never infers the cause of a missing input). Surfaced by adopter field experience (SpecOrigin draft ADR-014, 2026-07-26). |
 | 0.2.0 | 2026-07-09 | Draft | Review-driven (feedback on the principle). Addressed the **model-in-the-loop**: fail-closed MUST be **enforced in code** and **constrain the action space**, not return a routable error string. Selector sharpened to **irreversibility + blast radius + detectability**; **unclassified fails closed** (fixed the residual-class inversion). Added **retry** as a distinct **idempotency-gated** mode, with **ambiguous-outcome ⇒ presume-committed**. Degradation made **run-level, sticky/monotone** with a declared **recovery gate** and a **floor** (never reach classification/guardrail machinery). Fallbacks MUST be **no weaker than the primary** (reduce capability, not guarantees). "Never silent" decomposed into **three audiences** + **confabulation** boundary-marking. **Escalation** given a timeout that **expires fail-closed**. Added `related:` APR-015/016. |
