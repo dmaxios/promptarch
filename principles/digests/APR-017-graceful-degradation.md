@@ -1,6 +1,6 @@
 # APR-017 — Graceful Degradation & Failure Handling — Digest
 
-> **Generated digest of [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.2.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** A failure's handling is set at design time by what it blocks — irreversibility, blast radius, detectability — never by runtime model judgment: irreversible/consequential/unclassified paths fail closed (deny, roll back, presume ambiguous outcomes committed, and constrain the action space so the model can't re-plan around the halt); other paths degrade only via a declared fallback no weaker than the primary, within a sticky run-level budget that never reaches the guardrail machinery; retries are idempotency-gated; and no failure is silent — logged, disclosed, and marked at the artifact boundary.
 
@@ -16,6 +16,11 @@ Selector = **irreversibility + blast radius**, **detectability** as tiebreaker; 
 | **Reversible / low-blast / advisory** | **Degrade** — a declared fallback **no weaker than the primary**, marked and logged. |
 | **Idempotent, transient** | **Retry** — declared limits; ambiguous outcome ⇒ presume committed; exhaustion falls through. |
 | **Unclassified / unrecognized** | **Fail closed** — unknown blast radius treated as high. |
+
+## Degrading a dependency edge
+
+- **Evidence vs. structural**: only **evidence** edges (read to ground claims — absence reduces *coverage*) may be declared degradable; **structural** edges (define the unit of work — absence changes the output's *shape*) stay hard. Testable: a degraded output MUST validate against the **same schema** as the full one; a shape change = mis-classified edge.
+- **Plan-holder resolves absence**: a consumer cannot distinguish deliberately-not-scheduled / mis-ordered / produced-but-empty / stale — only the plan-holder can. The harness resolves every dependency before dispatch and passes a concrete input **or** an explicit degradation instruction; the consumer NEVER infers the cause (APR-003). Mis-ordering and execution failure halt, never degrade.
 
 ## Normative rules
 
@@ -36,11 +41,11 @@ The mode is **derived** from existing metadata — `observe.safety_critical`, re
 
 ## Governance checks
 
-Fail-closed enforced in code (constrains action space, not a routable string) · unclassified fails closed · fallbacks no weaker than primary · retry gated to idempotent + ambiguous-presumed-committed · run-level sticky degradation budget + recovery gate + floor (never reaches guardrail machinery) · no silent degradation across three audiences (confabulation-over-empty-retrieval eval) · escalation timeout expires fail-closed · model-fallback within the validated set.
+Fail-closed enforced in code (constrains action space, not a routable string) · unclassified fails closed · degradable edges evidence-only (same-schema test; plan-holder resolves absence) · fallbacks no weaker than primary · retry gated to idempotent + ambiguous-presumed-committed · run-level sticky degradation budget + recovery gate + floor (never reaches guardrail machinery) · no silent degradation across three audiences (confabulation-over-empty-retrieval eval) · escalation timeout expires fail-closed · model-fallback within the validated set.
 
 ## Scope limits — do NOT misapply
 
 Not an infrastructure resilience framework (governs the behavioral fail-closed-vs-degrade-vs-retry decision, not transports/supervisors/circuit-breaker libs) · not APR-009 (that places oversight on *successful* actions by reversibility; this handles *failed* dependencies — they compose) · not a replacement for the local halt rules (the general principle they instantiate; unifies, doesn't remove) · not a guarantee of availability or correctness · not chaos-testing methodology.
 
 ---
-*Source: [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.2.0 · regenerate this digest whenever the source changes.*
+*Source: [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.0 · regenerate this digest whenever the source changes.*

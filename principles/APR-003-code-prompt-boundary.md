@@ -4,13 +4,14 @@ title: "A Code/Prompt Boundary Principle for Promptware"
 abstract: "Places deterministic, verifiable, or safety-critical behavior in code and open-ended judgment in prompts, with an explicit, typed, testable seam at every code/prompt crossing — so each behavior is verified the right way and no safety decision rests silently on a model."
 status: Draft
 class: architectural
-version: 0.1.5
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
+  - "Claude Fable 5 (Anthropic)"
 created: 2026-05-29
-last-updated: 2026-07-01
+last-updated: 2026-07-26
 audience: Architects and framework authors of agentic AI platforms; anyone deciding whether logic executes as code or as a prompt
 supersedes: []
 superseded-by: []
@@ -18,7 +19,10 @@ related:
   - APR-000
   - APR-001
   - APR-002
+  - APR-009
   - APR-014
+  - APR-017
+  - APR-023
 tags:
   - determinism
   - code-prompt-boundary
@@ -101,12 +105,28 @@ Where deterministic and probabilistic substrates meet, the crossing MUST be a ty
 
 A correctly drawn seam is what makes a behavior *swappable*: a prompt placeholder behind a typed contract can later be replaced by a code implementation (or a different model) without disturbing its consumers.
 
+## 5.1 The no-self-adjudication corollary
+
+One instance of the safety-gating rule recurs so often across the corpus that it deserves its own name:
+
+> **A probabilistic component MUST NOT adjudicate a property that licenses its own authority, effort, or shortcut. The entity whose work a property judges, gates, or excuses never assigns that property.**
+
+The corpus keeps re-deriving this rule case by case, always citing this APR as the basis — each instance is a safety-relevant classification that would let the model widen its own permissions or narrow its own obligations if the model could assign it:
+
+- **Reversibility** ([APR-009](APR-009-human-in-the-loop.md)) — self-assessed reversibility lets the agent downgrade its own oversight.
+- **Structural rationale** ([APR-023](APR-023-structural-rationale.md)) — a model deciding whether structure constraining it is still necessary is judging its own leash.
+- **The cause of a missing dependency** ([APR-017](APR-017-graceful-degradation.md)) — a consumer inferring "deliberately absent" grants itself a degradation nobody declared.
+- **The verdict on its own output** — a producer verifying its own artifact, or answering its own deferred review questions, is self-judging; verification MUST be a separate, isolated dispatch (separation of duties, [APR-009](APR-009-human-in-the-loop.md)).
+
+In every case the resolution is the same and follows from §2: the property is either **deterministic declared metadata** (assigned by a principal, read by code) or **the plan-holding harness's decision** — never the constrained component's in-the-moment judgment. New APRs introducing gating properties SHOULD apply this corollary by construction rather than re-deriving it.
+
 ## 6. Prescription
 
 - A behavior classified Deterministic (§3–§4) **MUST** be implemented in code and **MUST** carry unit/property tests; it **MUST NOT** be delegated to a prompt where a closed-form implementation is reasonably available.
 - A behavior classified Probabilistic **MUST** be eval-gated per [OBSERVE](APR-002-observe.md) (`evaluated_by` + `min_eval_score`); it **MUST NOT** be hard-coded as exhaustive rules that defeat its adaptivity.
 - Every substrate crossing **MUST** be a typed, validated seam (§5).
 - Safety-critical decisions (allow/deny, severity, exposure, anything affecting access control, secrets, or audit) **MUST NOT** rest solely on a probabilistic substrate; a deterministic check **MUST** gate or bound the probabilistic judgment.
+- A probabilistic component **MUST NOT** adjudicate a property that licenses its own authority, effort, or shortcut (§5.1); such properties are declared metadata or the plan-holding harness's decision, and a producer **MUST NOT** verify its own artifact.
 - A component's [ASPECT](APR-001-aspect.md) `Procedure` / `Algorithm` section **SHOULD** mark, per step, whether the step is code or prompt, so the seam is visible in the spec, not just the implementation.
 - A behavior placed in `prompt` provisionally (§4.4) **SHOULD** record the intent to migrate and the contract the future code implementation will honor.
 - A component's `exec_form` **MUST** be declared in machine-readable frontmatter (`exec_form: code | prompt`) per [APR-014](APR-014-declare.md); the declared value MUST match the actual substrate.
@@ -119,6 +139,7 @@ A conformant platform checks, in review or CI:
 - **Seam typing.** Every tool-call / LLM-output that feeds a deterministic path has a declared schema and a validation step; unvalidated crossings are blocked.
 - **Verification matches mode.** Deterministic behaviors have unit tests; probabilistic behaviors have evals. A behavior with neither, or the wrong one, is flagged.
 - **Safety gating.** Safety-critical paths show a deterministic check bounding any probabilistic step.
+- **No self-adjudication.** No prompt assigns a property that gates its own path (reversibility, rationale, absence-cause, its own verdict); every gating verdict comes from declared metadata, the harness, or an isolated non-producer dispatch.
 - **Provisional placements are tracked.** §4.4 prompt-placeholders carry their migration intent and contract, so they are not forgotten.
 - **`exec_form` declared and consistent.** Every packaged component carries `exec_form: code` or `exec_form: prompt`; the declared value agrees with its actual verification discipline (unit test vs. eval gate).
 
@@ -180,3 +201,4 @@ External sources referenced in this APR; see §9 *Relationship to established pa
 | 0.1.3 | 2026-05-30 | Draft | Renamed `authors`→`principals` and `co-authors`→`generative-contributors`. No semantic change. |
 | 0.1.4 | 2026-06-26 | Draft | Added §3.1 naming `exec_form: script \| llm` as the machine-readable declaration axis for the assurance mode; added `exec_form` to Prescription and Governance checks; cross-referenced APR-014 DECLARE and APR-007. |
 | 0.1.5 | 2026-07-01 | Draft | Renamed both `exec_form` values onto one consistent axis (content form): `script`→`code` and `llm`→`prompt`, so the pair matches this principle's "Code/Prompt" title and the APR-000 promptware/codeware dyad. Value set is now `exec_form: code \| prompt`. No change to the boundary rule. |
+| 0.2.0 | 2026-07-26 | Draft | Added §5.1 **the no-self-adjudication corollary**, naming the invariant the corpus kept re-deriving case by case (APR-009 reversibility, APR-023 rationale, APR-017 absence-cause, producer-verifies-own-artifact): a probabilistic component never adjudicates a property that licenses its own authority, effort, or shortcut. Added matching Prescription bullet and governance check; APR-009/017/023 to `related`. Fourth instance surfaced by adopter field experience (SpecOrigin draft ADRs 014/016, 2026-07-26). |
