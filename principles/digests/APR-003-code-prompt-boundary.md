@@ -1,6 +1,6 @@
 # APR-003 — Code/Prompt Boundary — Digest
 
-> **Generated digest of [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.1.5.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** Places deterministic, verifiable, or safety-critical behavior in code and open-ended judgment in prompts, with an explicit, typed, testable seam at every code/prompt crossing — so each behavior is verified the right way and no safety decision rests silently on a model.
 
@@ -37,6 +37,7 @@ Both values name the same axis (content form), matching this principle's *Code/P
 - Probabilistic behavior MUST be eval-gated (`evaluated_by` + `min_eval_score`); MUST NOT be hard-coded as exhaustive rules that defeat its adaptivity.
 - Every substrate crossing MUST be a typed, validated seam.
 - Safety-critical decisions (allow/deny, severity, exposure, access control, secrets, audit) MUST NOT rest solely on a probabilistic substrate — a deterministic check MUST gate or bound the model's judgment.
+- **No self-adjudication**: a probabilistic component MUST NOT adjudicate a property that licenses its own authority, effort, or shortcut — reversibility (APR-009), structural rationale (APR-023), the cause of a missing dependency (APR-017), or the verdict on its own output (producer never verifies its own artifact; verification is an isolated non-producer dispatch). Such properties are declared metadata or the plan-holding harness's decision.
 - A component's [ASPECT](../APR-001-aspect.md) `Procedure` SHOULD mark, per step, whether it is code or prompt.
 
 ## The seam is a typed contract
@@ -50,4 +51,4 @@ Both values name the same axis (content form), matching this principle's *Code/P
 Not "minimize AI" (it's mode-matching — forcing genuine judgment into brittle rules violates it too) · not a runtime/execution model · not a tool-use spec (function-calling is one *mechanism* for the seam) · not a verification framework (it says *which* test/eval, not the tooling) · not a security framework (it gates safety-critical decisions but doesn't provide access control or injection defense).
 
 ---
-*Source: [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.1.5 · regenerate this digest whenever the source changes.*
+*Source: [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.0 · regenerate this digest whenever the source changes.*
