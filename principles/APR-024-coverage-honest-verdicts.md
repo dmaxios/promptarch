@@ -4,11 +4,12 @@ title: "A Coverage-Honest Verdict Principle for Promptware"
 abstract: "Every verdict carries orthogonal severity (what was found) and coverage (what was examined), coverage computed from recorded gap facts over the check's input closure. A clean pass over an incomplete closure is inexpressible, and every gap names the action that would close it. Kills the vacuous pass."
 status: Draft
 class: architectural
-version: 0.1.0
+version: 0.1.1
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Fable 5 (Anthropic)"
+  - "Claude Opus 5 (Anthropic; 1M context; via SpecOrigin field ADRs 014-016)"
 created: 2026-07-26
 last-updated: 2026-07-26
 audience: Architects of governance and eval machinery; authors of conformance checks, review gates, and CI fitness functions; harness builders whose runs consume verdicts downstream
@@ -141,4 +142,5 @@ External sources referenced in this APR; see *Relationship to established patter
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
+| 0.1.1 | 2026-07-26 | Draft | Recorded transitive generative credit: the SpecOrigin field ADRs this revision draws on were drafted with Claude Opus 5 (Anthropic; 1M context). Frontmatter-only; no semantic change. |
 | 0.1.0 | 2026-07-26 | Draft | Initial draft published as APR-024, per proposal issue #34. Surfaced by adopter field experience (SpecOrigin draft ADRs 014/015/016, 2026-07-26); independently re-derived by the apr-conformance reference skill. |

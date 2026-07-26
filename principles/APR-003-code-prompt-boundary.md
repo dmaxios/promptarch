@@ -4,12 +4,13 @@ title: "A Code/Prompt Boundary Principle for Promptware"
 abstract: "Places deterministic, verifiable, or safety-critical behavior in code and open-ended judgment in prompts, with an explicit, typed, testable seam at every code/prompt crossing — so each behavior is verified the right way and no safety decision rests silently on a model."
 status: Draft
 class: architectural
-version: 0.2.0
+version: 0.2.1
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
   - "Claude Fable 5 (Anthropic)"
+  - "Claude Opus 5 (Anthropic; 1M context; via SpecOrigin field ADRs 014-016)"
 created: 2026-05-29
 last-updated: 2026-07-26
 audience: Architects and framework authors of agentic AI platforms; anyone deciding whether logic executes as code or as a prompt
@@ -195,6 +196,7 @@ External sources referenced in this APR; see §9 *Relationship to established pa
 
 | Version | Date | Status | Change |
 |---|---|---|---|
+| 0.2.1 | 2026-07-26 | Draft | Recorded transitive generative credit: the SpecOrigin field ADRs this revision draws on were drafted with Claude Opus 5 (Anthropic; 1M context). Frontmatter-only; no semantic change. |
 | 0.1.0 | 2026-05-29 | Draft | Initial draft published as APR-003. |
 | 0.1.1 | 2026-05-30 | Draft | Added References section. No semantic change. |
 | 0.1.2 | 2026-05-30 | Draft | Added `abstract` frontmatter field. No semantic change. |
