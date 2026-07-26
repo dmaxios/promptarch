@@ -4,13 +4,13 @@ title: "A Composition and Delegation-Topology Principle for Multi-Agent Promptwa
 abstract: "Compose agents and skills into a bounded delegation graph: prefer skills, keep delegation acyclic with bounded feedback loops, declare the edges and traverse them dynamically, guarantee termination, and narrow authority along each edge — so control flow stays legible, terminating, and auditable."
 status: Draft
 class: architectural
-version: 0.1.1
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
 created: 2026-05-31
-last-updated: 2026-05-31
+last-updated: 2026-07-10
 audience: Architects of multi-agent systems; framework authors building orchestrators and routers; teams whose promptware has several agents delegating to one another
 supersedes: []
 superseded-by: []
@@ -18,6 +18,8 @@ related:
   - APR-001
   - APR-003
   - APR-005
+  - APR-012
+  - APR-019
 tags:
   - composition
   - delegation
@@ -58,6 +60,29 @@ Each edge is an ASPECT delegation contract; the graph is the structure over thos
 
 - Single-agent or single-skill setups (there is no graph).
 - It is a *composition/topology* principle, **not** a runtime scheduler or message-bus specification. It says what the graph must satisfy, not how the orchestrator executes it (the host's concern, per APR-000 and ASPECT).
+
+## Classifying the system: structured agent vs. multi-agent
+
+Whether a delegation graph is *one* **structured agent** or a **multi-agent system** is decided by **principal, not topology** — not by the number of LLM calls, personas, processes, or containers.
+
+> A **structured agent (with subagents)** is a graph whose loops all share **one principal**: one credential set, one permission envelope, one **trust domain**, and one deterministic control point owning termination, budget, and halt. Subagents decompose *attention*, not *authority*.
+>
+> A **multi-agent system** is one where two or more loops are **distinct principals** — independently scoped authority, or a control plane not owned by a single parent — such that **authority composes across the boundary**.
+
+Apply three questions **per run** (not once per architecture):
+
+1. **Principal** — do all loops act with the same credentials and permission set?
+2. **Control** — is there exactly one deterministic place that owns termination, budget, and halt?
+3. **Containment** — does halting one halt or quiesce the rest?
+
+Any **no** makes it a multi-agent system: the graph crosses a trust-domain boundary, and the adopter **MUST** then perform cross-boundary authority analysis — reachable-graph permissions, delegation-narrows-privilege, distributed degradation budget — governed by [APR-012](APR-012-federated-composition.md). All **yes**, and this APR's bounds suffice within the one envelope.
+
+Two rules hold on **both** sides:
+
+- The classification is **per run, not a static label.** Attaching a component that holds its own credentials (e.g. an MCP server that is itself an agent) turns a structured agent into a multi-agent system at runtime with no code change — so the classifier **MUST** run at composition time.
+- A loop's output entering another loop's context is **untrusted content** ([APR-005](APR-005-trust-boundaries.md)) regardless of a shared principal. Subagents get no trust exemption: the classification decides whether **authority** composes, never whether **trust** does.
+
+This is the runtime face of the **containment vs. dependency** line ([APR-019](APR-019-identity.md)): a structured agent is containment within one principal; a multi-agent system is a dependency across principals ([APR-012](APR-012-federated-composition.md)). The terms are in the [Glossary](../GLOSSARY.md).
 
 ## Granularity: agents vs skills
 
@@ -178,3 +203,4 @@ External sources referenced in this APR; see *Relationship to established patter
 |---|---|---|---|
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-006. |
 | 0.1.1 | 2026-05-31 | Draft | Topology reframed: feedback loops are first-class (acyclic forward delegation + bounded feedback loops), not "cycles by exception"; the line is bounded loop vs. unbounded cycle (the latter forbidden). |
+| 0.2.0 | 2026-07-10 | Draft | Added §Classifying the system: the **structured agent vs. multi-agent** line drawn by **principal, not topology**, with a per-run three-question test (Principal / Control / Containment); any "no" obliges cross-boundary authority analysis ([APR-012](APR-012-federated-composition.md)). Tied it to the containment-vs-dependency line ([APR-019](APR-019-identity.md)); the terms are defined in the Glossary. Added APR-012/APR-019 to `related`. |

@@ -1,10 +1,14 @@
 # APR-006 — Composition & Delegation Topology — Digest
 
-> **Generated digest of [APR-006 — A Composition and Delegation-Topology Principle for Multi-Agent Promptware](../APR-006-composition-topology.md) v0.1.1.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-006 — A Composition and Delegation-Topology Principle for Multi-Agent Promptware](../APR-006-composition-topology.md) v0.2.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** Compose agents and skills into a bounded delegation graph: prefer skills, keep delegation acyclic with bounded feedback loops, declare the edges and traverse them dynamically, guarantee termination, and narrow authority along each edge — so control flow stays legible, terminating, and auditable.
 
 **Principle.** A multi-agent system is a delegation graph (nodes = agents/skills, edges = delegations). That graph MUST be explicit and bounded — in shape, depth, and authority. Each edge is an ASPECT delegation contract.
+
+## Classifying the system: structured agent vs. multi-agent
+
+Decided by **principal, not topology** (not call/persona/process/container count). **Structured agent (with subagents):** all loops share **one principal** — one credential set, permission envelope, trust domain — and one control point owning termination/budget/halt; subagents decompose *attention*, not *authority*. **Multi-agent:** two+ loops are **distinct principals**, so **authority composes across the boundary**. Per-run test: (1) same credentials? (2) one deterministic termination/budget/halt owner? (3) does halting one quiesce the rest? Any **no** ⇒ multi-agent ⇒ **MUST** do cross-boundary authority analysis (APR-012). Per-run, not static (an MCP server holding its own credentials flips it at runtime). Both sides: a loop's output into another's context is **untrusted content** (APR-005) — the line decides whether *authority* composes, never *trust*. Runtime face of containment-vs-dependency (APR-019).
 
 ## The four axes
 
@@ -32,4 +36,4 @@ Declared envelope present and reviewed · forward delegation acyclic, feedback l
 Not a runtime/scheduler/message bus · not a multi-agent framework (framework-agnostic) · not a replacement for ASPECT (ASPECT governs nodes/edges; this governs the graph) · not a guarantee of correct routing · not applicable to single-component systems (no graph).
 
 ---
-*Source: [APR-006 — A Composition and Delegation-Topology Principle for Multi-Agent Promptware](../APR-006-composition-topology.md) v0.1.1 · regenerate this digest whenever the source changes.*
+*Source: [APR-006 — A Composition and Delegation-Topology Principle for Multi-Agent Promptware](../APR-006-composition-topology.md) v0.2.0 · regenerate this digest whenever the source changes.*
