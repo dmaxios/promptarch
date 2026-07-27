@@ -36,6 +36,7 @@ These are *backlog* stages — distinct from an APR's lifecycle `status` (see [`
 | Runtime-conformance profile | The runtime obligations the corpus already imposes on a harness — collected by reference into one checkable conformance profile, each owned by its principle; closed-for-modification, extended by owner-registration; interface not mechanism. The harness-coverage study's structural recommendation. | ✍️ Drafted | [APR-018](../principles/APR-018-runtime-contract.md) · issue #15 |
 | Declared structural rationale | Behavior-shaping structure declares *why it exists* — compensatory (pins the capability baseline it offsets; retirable via APR-008's bidirectional re-validation) vs. coordinating (names its human/organizational reason; never loosened on capability grounds) — undeclared defaults to coordinating for removal. Generalizes APR-008 v0.2.0; surfaced by the [model-capability-growth study](../docs/studies/2026-07-25-model-capability-growth.md). | ✍️ Drafted | [APR-023](../principles/APR-023-structural-rationale.md) · issue #29 |
 | Coverage-honest verdicts | A verdict carries orthogonal **severity** (pass \| fail) and **coverage** (complete \| partial), coverage computed from recorded gap facts over the check's input closure; a clean pass over an incomplete closure is inexpressible, and every gap names its closing action. Kills the vacuous pass. Surfaced by SpecOrigin field ADRs (2026-07-26); independently re-derived by the apr-conformance skill. | ✍️ Drafted | [APR-024](../principles/APR-024-coverage-honest-verdicts.md) · issue #34 |
+| Governance attribution | Every output is attributable to the **governance envelope** that produced it — an evidence-bound, append-only record derived mechanically at the routing decision, never the model's own claim; unattributed output is ungoverned by definition (absence-as-evidence); attribution records, never gates. Completes the absence-as-fact doctrine at the interaction layer (artifact: APR-017; verdict: APR-024). Surfaced by SpecOrigin ADR-019 (2026-07-27). | 📋 Proposed | issue #41 (candidate APR-025) |
 
 ## Idea backlog (not yet proposed)
 
@@ -62,6 +63,18 @@ and [APR-017](../principles/APR-017-graceful-degradation.md) respectively (see *
 - **One-liner:** How agents coordinate *without* a delegation edge — shared state (blackboard), broadcast/pub-sub, negotiation/market — under discipline.
 - **Gap:** APR-006 governs the delegation call-graph; coordination that isn't call→return is untouched.
 - **Caveat:** May not be a principle — much of it reduces to "shared state is an OBSERVE-governed artifact." Park and revisit.
+
+### 4. Component admission — 💡 Idea (low)
+
+- **One-liner:** A component earns its existence only if it differs from existing ones by more than a parameter — otherwise it *is* a parameter; an admission test before creation, not only classification after.
+- **Gap:** [APR-007](../principles/APR-007-pattern-mechanism.md) forbids copy-paste of *patterns* and has a promotion test for them, but nothing asks whether a new *capability* should exist at all. Field evidence (SpecOrigin ADR-017, 2026-07-27): 39 of 171 skills were parameter variants of 4 — with duplicated governance gates a logged security liability ("N backdoor surfaces for a bypass"). Taxonomies classify what exists; admission decides what should.
+- **Relationship:** Extends APR-007 (generalizing its pattern-promotion test to capabilities); touches APR-005/010 (duplication as review/security surface).
+
+### 5. Declared-membership conformance checks — 💡 Idea (low)
+
+- **One-liner:** A budget or composition check MUST assert *membership against the declared composition*, not only aggregate size — size-only checks let drift hide inside a passing number.
+- **Gap:** [APR-015](../principles/APR-015-context-assembly.md) declares composition and budgets, but its checks could pass on size while the *content* drifts from the declaration. Field evidence (SpecOrigin ADR-018, 2026-07-27): a tier-budget validator asserted size only, and a manifest grew to 10× its declared shape unnoticed. Also an [APR-024](../principles/APR-024-coverage-honest-verdicts.md) instance: a check whose predicate under-covers its claim.
+- **Relationship:** Likely an APR-015 governance-check addition (one bullet), not a standalone APR; noted here until APR-015's next revision picks it up.
 
 ## Considered, not pursued as standalone
 
