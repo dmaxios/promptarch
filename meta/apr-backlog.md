@@ -63,6 +63,18 @@ and [APR-017](../principles/APR-017-graceful-degradation.md) respectively (see *
 - **Gap:** APR-006 governs the delegation call-graph; coordination that isn't call→return is untouched.
 - **Caveat:** May not be a principle — much of it reduces to "shared state is an OBSERVE-governed artifact." Park and revisit.
 
+### 4. Component admission — 💡 Idea (low)
+
+- **One-liner:** A component earns its existence only if it differs from existing ones by more than a parameter — otherwise it *is* a parameter; an admission test before creation, not only classification after.
+- **Gap:** [APR-007](../principles/APR-007-pattern-mechanism.md) forbids copy-paste of *patterns* and has a promotion test for them, but nothing asks whether a new *capability* should exist at all. Field evidence (SpecOrigin ADR-017, 2026-07-27): 39 of 171 skills were parameter variants of 4 — with duplicated governance gates a logged security liability ("N backdoor surfaces for a bypass"). Taxonomies classify what exists; admission decides what should.
+- **Relationship:** Extends APR-007 (generalizing its pattern-promotion test to capabilities); touches APR-005/010 (duplication as review/security surface).
+
+### 5. Declared-membership conformance checks — 💡 Idea (low)
+
+- **One-liner:** A budget or composition check MUST assert *membership against the declared composition*, not only aggregate size — size-only checks let drift hide inside a passing number.
+- **Gap:** [APR-015](../principles/APR-015-context-assembly.md) declares composition and budgets, but its checks could pass on size while the *content* drifts from the declaration. Field evidence (SpecOrigin ADR-018, 2026-07-27): a tier-budget validator asserted size only, and a manifest grew to 10× its declared shape unnoticed. Also an [APR-024](../principles/APR-024-coverage-honest-verdicts.md) instance: a check whose predicate under-covers its claim.
+- **Relationship:** Likely an APR-015 governance-check addition (one bullet), not a standalone APR; noted here until APR-015's next revision picks it up.
+
 ## Considered, not pursued as standalone
 
 - **Capability-relative gate calibration** — absorbed rather than pursued standalone. The over-caution complement to model-migration re-validation — eval thresholds and gate calibrations re-benchmarked against the current model, so gates tuned to a weaker model don't persist as dead weight — is folded directly into [APR-008](../principles/APR-008-artifact-lifecycle.md) v0.2.0 (§Model migration, "re-validation is bidirectional") while it is still Draft, not held as a separate idea. Surfaced by the [model-capability-growth study](../docs/studies/2026-07-25-model-capability-growth.md); precedent in [APR-009](../principles/APR-009-human-in-the-loop.md)'s track-record-weighted sampling. APR-009's blast-radius/reversibility placement explicitly does **not** soften with capability.

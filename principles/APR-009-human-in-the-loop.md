@@ -4,14 +4,14 @@ title: "A Human-in-the-Loop Oversight-Placement Principle for Promptware"
 abstract: "Place human oversight by reversibility and blast radius: irreversible/high-blast actions get plan-and-approve (before); reversible/low-blast get fire-and-judge (after). Unknown defaults to irreversible; safety floors are never sampled away; long runs batch questions to declared checkpoints."
 status: Draft
 class: architectural
-version: 0.2.0
+version: 0.3.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Opus 4.8 (Anthropic; 1M context)"
   - "Claude Fable 5 (Anthropic)"
 created: 2026-05-31
-last-updated: 2026-07-26
+last-updated: 2026-07-27
 audience: Architects of agentic systems that take consequential actions; framework authors building approval/review UX; teams in regulated or high-blast-radius domains
 supersedes: []
 superseded-by: []
@@ -88,7 +88,8 @@ Agentic promptware takes consequential actions — writing to shared state, call
 - the **intent** (what and why);
 - the **concrete action/diff preview** — the *actual* change, not a model-written summary (the key anti-rubber-stamp rule);
 - the **predicted blast radius**;
-- the **rollback plan**, or an explicit "irreversible — no rollback" flag.
+- the **rollback plan**, or an explicit "irreversible — no rollback" flag;
+- the **predicted cost** — duration, tokens, or spend, whichever is material — where the platform can estimate it. An operator cannot oversee a number they cannot see: a plan approved without its price hides part of what is being approved (field case: a 23-action plan approved with no cost shown ran 13.8 hours). Estimates are rendered as **ranges carrying their confidence/sample count, never false-precision point values** — a point estimate ungrounded in measurement is "a guess wearing a number" and erodes trust in the whole approval surface. Where the plan declares dependencies, the headline is the **critical path**, not the serial sum.
 
 The decision (approve / reject / modify) is recorded with the **approver's identity**.
 
@@ -116,7 +117,7 @@ Fatigue is real: a human who must approve everything stops reading and rubber-st
 - **Thresholds** — do not gate actions below a declared blast-radius/cost threshold.
 - **Risk-weighted sampling** — fire-and-judge reviews a sample, with the rate rising with blast radius and falling with track record.
 - **Batching** — homogeneous low-stakes actions may be approved or judged as a batch.
-- **Anchoring** — *the anchor does the deciding*: a long plan presented with every item pre-checked is approved as-is nearly every time, so the concrete-diff rule alone does not prevent rubber-stamping. The approval surface SHOULD present the **minimal default selection** with the additions *offered* (expandable), not the maximal set pre-checked — same information, opposite default. Deselection MUST be **dependency-aware**: unchecking an item reports its cascade ("also drops X, Y — you lose your target"), so the human never approves a plan that cannot run.
+- **Anchoring** — *the anchor does the deciding*: a long plan presented with every item pre-checked is approved as-is nearly every time, so the concrete-diff rule alone does not prevent rubber-stamping. The approval surface SHOULD present the **minimal default selection** with the additions *offered* (expandable), not the maximal set pre-checked — same information, opposite default. Deselection MUST be **dependency-aware**: unchecking an item reports its cascade ("also drops X, Y — you lose your target"), so the human never approves a plan that cannot run. Where cost estimates exist, the offered additions carry their price ("+3 more, +1 h") — the anchor and the price belong on the same surface.
 
 **The hard floor:** safety-critical or irreversible-high-blast actions are **NEVER** sampled-out or batched-away — they always get individual plan-and-approve.
 
@@ -130,6 +131,7 @@ Fatigue is real: a human who must approve everything stops reading and rubber-st
 - Fatigue reduction (thresholds, sampling, batching, anchoring) **MUST NOT** apply to safety-critical or irreversible-high-blast actions, which always receive individual approval.
 - A long-running run **MUST** declare its oversight checkpoints at plan time; deferrable questions arising between checkpoints **MUST** batch to the next one; blocking questions follow APR-017 escalation. Ad hoc mid-run prompts and silently dropped questions are both non-conformant.
 - Approval surfaces **SHOULD** present the minimal plan as the default selection with additions offered; deselection **MUST** be dependency-aware.
+- Plan-and-approve **SHOULD** show the predicted cost where the platform can estimate it (critical-path headline where dependencies are declared); estimates **MUST** render as ranges carrying confidence/sample count — a point value without a measurement basis is non-conformant.
 - An AI-substituted review **MUST** be an isolated, non-producer dispatch, **MUST** be recorded as a substitution in the run record, and **MUST NOT** satisfy the safety floor.
 
 ## Governance and validation
@@ -145,6 +147,7 @@ A conformant platform checks, in review or CI:
 - **Safety floor intact** — no sampling/batching/threshold/anchoring path lets a safety-critical or irreversible-high-blast action skip individual approval.
 - **Checkpoints declared** — long-running runs show their oversight checkpoints in the approved plan; traces contain no unscheduled mid-run prompts and no dropped deferred questions.
 - **Substituted judgment recorded** — every AI-substituted review appears in the run record as a substitution, from an isolated non-producer dispatch, and never stands in where the safety floor requires a human.
+- **Cost visible at approval** — where estimates exist, approval records include the predicted cost as ranges with their measurement provenance; unmeasured point-value estimates are flagged.
 
 ## What this principle is NOT
 
@@ -197,5 +200,6 @@ External sources referenced in this APR; see *Relationship to established patter
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
+| 0.3.0 | 2026-07-27 | Draft | **Predicted cost joins the plan-and-approve payload** (SHOULD, where estimable): an operator cannot oversee a number they cannot see — field case: a 23-action plan approved with no cost shown ran 13.8 h. Estimates render as ranges with confidence/sample count, never unmeasured point values ("a guess wearing a number"); critical-path headline where dependencies are declared; anchoring offers carry their price. Surfaced by adopter field experience (SpecOrigin ADR-015 D3.1 revision, 2026-07-27). |
 | 0.2.0 | 2026-07-26 | Draft | Added §When judgment happens: **scheduled checkpoints** for long-running runs (declared at plan time; deferrable questions batch to the next checkpoint; blocking ones follow APR-017 escalation; staged phase-boundary approval), and **AI-substituted judging** under two hard conditions (isolated non-producer dispatch; recorded substitution that never satisfies the safety floor). Added the **anchoring** fatigue lever (minimal default selection, dependency-aware deselection). Surfaced by adopter field experience (SpecOrigin draft ADRs 015/016, 2026-07-26). Added APR-017 to `related`. |
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-009. |
