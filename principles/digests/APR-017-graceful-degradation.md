@@ -1,6 +1,6 @@
 # APR-017 — Graceful Degradation & Failure Handling — Digest
 
-> **Generated digest of [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.1.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** A failure's handling is set at design time by what it blocks — irreversibility, blast radius, detectability — never by runtime model judgment: irreversible/consequential/unclassified paths fail closed (deny, roll back, presume ambiguous outcomes committed, and constrain the action space so the model can't re-plan around the halt); other paths degrade only via a declared fallback no weaker than the primary, within a sticky run-level budget that never reaches the guardrail machinery; retries are idempotency-gated; and no failure is silent — logged, disclosed, and marked at the artifact boundary.
 
@@ -48,4 +48,4 @@ Fail-closed enforced in code (constrains action space, not a routable string) ·
 Not an infrastructure resilience framework (governs the behavioral fail-closed-vs-degrade-vs-retry decision, not transports/supervisors/circuit-breaker libs) · not APR-009 (that places oversight on *successful* actions by reversibility; this handles *failed* dependencies — they compose) · not a replacement for the local halt rules (the general principle they instantiate; unifies, doesn't remove) · not a guarantee of availability or correctness · not chaos-testing methodology.
 
 ---
-*Source: [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.0 · regenerate this digest whenever the source changes.*
+*Source: [APR-017 — A Graceful-Degradation and Failure-Handling Principle for Promptware](../APR-017-graceful-degradation.md) v0.3.1 · regenerate this digest whenever the source changes.*
