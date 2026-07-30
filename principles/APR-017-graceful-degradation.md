@@ -4,7 +4,7 @@ title: "A Graceful-Degradation and Failure-Handling Principle for Promptware"
 abstract: "When a tool errors, an injection is missing, a delegate times out, or the model is unavailable, handling is set by what the failure blocks: safety-critical paths fail closed, other paths degrade only via a declared bounded fallback, and no failure or degradation is ever silent."
 status: Draft
 class: architectural
-version: 0.3.0
+version: 0.3.1
 principals:
   - D. Maxios
 generative-contributors:
@@ -157,15 +157,17 @@ This APR introduces **no new component-metadata field**, consistent with APR-015
 
 ## References
 
-1. Nygard, M. T. *Release It! Design and Deploy Production-Ready Software* (circuit breaker, bulkhead). Pragmatic Bookshelf, 2nd ed., 2018.
-2. Armstrong, J. *Making Reliable Distributed Systems in the Presence of Software Errors* (Erlang/OTP supervision, "let it crash"). PhD thesis, KTH, 2003. <https://erlang.org/download/armstrong_thesis_2003.pdf>
-3. Beyer, B., et al. *Site Reliability Engineering* — graceful degradation, handling overload. Google / O'Reilly, 2016. <https://sre.google/sre-book/handling-overload/>
-4. Avizienis, A., Laprie, J.-C., Randell, B., Landwehr, C. *Basic Concepts and Taxonomy of Dependable and Secure Computing* (fail-safe/fail-secure taxonomy). IEEE TDSC, 2004. <https://ieeexplore.ieee.org/document/1335465>
+1. Maxios, D. *SpecOrigin — ADR-014: Dependency modes, recorded degradation, and coverage-carrying verdicts*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+2. Nygard, M. T. *Release It! Design and Deploy Production-Ready Software* (circuit breaker, bulkhead). Pragmatic Bookshelf, 2nd ed., 2018.
+3. Armstrong, J. *Making Reliable Distributed Systems in the Presence of Software Errors* (Erlang/OTP supervision, "let it crash"). PhD thesis, KTH, 2003. <https://erlang.org/download/armstrong_thesis_2003.pdf>
+4. Beyer, B., et al. *Site Reliability Engineering* — graceful degradation, handling overload. Google / O'Reilly, 2016. <https://sre.google/sre-book/handling-overload/>
+5. Avizienis, A., Laprie, J.-C., Randell, B., Landwehr, C. *Basic Concepts and Taxonomy of Dependable and Secure Computing* (fail-safe/fail-secure taxonomy). IEEE TDSC, 2004. <https://ieeexplore.ieee.org/document/1335465>
 
 ## Change log
 
 | Version | Date | Status | Change |
 |---|---|---|---|
+| 0.3.1 | 2026-07-30 | Draft | Added SpecOrigin ADR reference(s) — the adopter field source, named per the principal's direction (currently a private repository; publication is planned). No semantic change. |
 | 0.1.0 | 2026-07-08 | Draft | Initial draft. Failure handling selected by declared safety-criticality: fail closed for safety-critical/consequential/irreversible paths, declared bounded fallback elsewhere, never silent. Unifies the six local halt rules (APR-002/003/005/006/011/015) as instances of one principle. |
 | 0.3.0 | 2026-07-26 | Draft | Added §Degrading a dependency edge: the **evidence vs. structural** degradability test (absence may reduce *coverage*, never change *shape*; schema-testable) and **plan-holder absence resolution** (the harness resolves every dependency before dispatch — concrete input or explicit degradation instruction; the consumer never infers the cause of a missing input). Surfaced by adopter field experience (SpecOrigin draft ADR-014, 2026-07-26). |
 | 0.2.0 | 2026-07-09 | Draft | Review-driven (feedback on the principle). Addressed the **model-in-the-loop**: fail-closed MUST be **enforced in code** and **constrain the action space**, not return a routable error string. Selector sharpened to **irreversibility + blast radius + detectability**; **unclassified fails closed** (fixed the residual-class inversion). Added **retry** as a distinct **idempotency-gated** mode, with **ambiguous-outcome ⇒ presume-committed**. Degradation made **run-level, sticky/monotone** with a declared **recovery gate** and a **floor** (never reach classification/guardrail machinery). Fallbacks MUST be **no weaker than the primary** (reduce capability, not guarantees). "Never silent" decomposed into **three audiences** + **confabulation** boundary-marking. **Escalation** given a timeout that **expires fail-closed**. Added `related:` APR-015/016. |

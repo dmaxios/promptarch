@@ -4,13 +4,13 @@ title: "A Governance-Attribution Principle for Promptware"
 abstract: "Every output is attributable to the governance envelope that produced it — an evidence-bound, append-only record derived mechanically at the routing decision, never the model's own claim. Unattributed output is ungoverned by definition; attribution records, it never gates."
 status: Draft
 class: architectural
-version: 0.1.0
+version: 0.2.0
 principals:
   - D. Maxios
 generative-contributors:
   - "Claude Fable 5 (Anthropic)"
 created: 2026-07-27
-last-updated: 2026-07-27
+last-updated: 2026-07-30
 audience: Harness and platform builders; framework authors whose promptware executes inside a general assistant harness; auditors reconstructing what governed a session
 supersedes: []
 superseded-by: []
@@ -83,14 +83,15 @@ Collapsing *governed*, *advisory*, and *degraded* into one positive signal destr
 - The class set **MUST** be an enum distinguishing at least governed / advisory / degraded / operational / native; a boolean "framework: yes/no" signal is non-conformant. The enum is **closed** — extending it is an amendment to the platform's attribution contract, not a judgment call at the keyboard.
 - Every routed turn **MUST** append its attribution record to an **append-only, session-scoped** store — session-scoped because ungoverned turns have no run to record into, and a run-scoped store would make the record impossible exactly where it matters most. Records referencing a run inherit that run's audit chain ([APR-011](APR-011-observability.md), [APR-002](APR-002-observe.md)).
 - **Absence-as-evidence** is the reconstruction rule: a turn with no attribution record was not routed by the promptware. Reconstruction of a session's attribution history **MUST** be possible from the record alone, offline and deterministically.
-- Any **in-band announcement** (banner, badge, prefix) **MUST** be bound to the record: an announcement naming evidence (a run id, a plan) is emitted only after that evidence exists, and the announcement and its record are written together or neither. An announcement that can print without its record is non-conformant.
+- Any **in-band announcement** (banner, badge, statusline) **MUST be rendered by the runtime from the record — never authored by the model.** This is the co-write constraint in its strongest form: the announcement is a *projection* of the record, so it cannot exist without it. A model-authored announcement is a claim about the model's own governance (APR-003 §5.1) — and field-tested unreliable even when explicitly instructed (repeated live tests across two runtimes produced zero dependable model-emitted indicators while the instruction was verifiably delivered). An announcement that can print without its record is non-conformant.
+- A class **MUST NOT be emitted before its deriving fact exists.** If the mechanical predicate for a class is not yet implemented (e.g. a gap-carrying verdict that no schema yet records), the class is **reserved, not emitted** — and the resulting transitional window (outputs that will record under a stronger class than they deserve) **MUST be named in the consumer-facing doctrine** rather than left for the schema to contradict the contract silently.
 - Attribution **MUST NOT gate**: it records and announces, and never blocks a turn. A system that refuses to answer because it cannot classify itself has converted transparency into an availability defect.
-- The platform's consumer-facing doctrine **MUST state the limit plainly**: positive attribution is reliable; the *absence* of an ungoverned-warning is **not** proof of governance for turns the promptware never saw. Omitting this statement manufactures the false confidence the mechanism exists to remove (the padlock problem).
+- The platform's consumer-facing doctrine **MUST state the limit plainly**: positive attribution is reliable; the *absence* of an ungoverned-warning is **not** proof of governance for turns the promptware never saw — and the absence of an *advisory*-class record is not evidence that no advisory component ran, where a delivery channel carries no recorder. Omitting these statements manufactures the false confidence the mechanism exists to remove (the padlock problem).
 - Degraded attribution **MUST NOT launder**: a `degraded` turn's gaps remain attached per APR-024 propagation; an `advisory` turn's downgraded guarantees are named, not implied.
 
 ## Runtime obligations
 
-The sub-promptware case — a turn in which the orchestrating promptware was never loaded — is unreportable from inside the promptware, for the structural reason that the promptware never built the request. Closing it is a harness concern, registered as [APR-018](APR-018-runtime-contract.md) **R15** (owned here, indexed there): a conforming harness **SHOULD** stamp every consumer-visible turn with a turn-provenance record (which promptware, if any, was in the loop), completing the attribution ledger for turns the promptware cannot see. Until a harness provides R15, a platform's accounting is honestly partial — positive attribution reliable, complete accounting deferred — and its doctrine says so.
+The sub-promptware case — a turn in which the orchestrating promptware was never loaded — is unreportable from inside the promptware, for the structural reason that the promptware never built the request. Closing it is a harness concern, registered as [APR-018](APR-018-runtime-contract.md) **R15** (owned here, indexed there): a conforming harness **SHOULD** stamp every consumer-visible turn with a turn-provenance record. The strongest form is **unconditional stamping with supersession**: the harness writes a baseline record for *every* turn (class: unclassified-at-submit), and the promptware's record for the same turn supersedes it — making absence-as-evidence **two-sided** (a turn missing even the baseline record was outside the session entirely, not merely unrouted). Until a harness provides R15, a platform's accounting is honestly partial — positive attribution reliable, complete accounting deferred — and its doctrine says so.
 
 ## Governance and validation
 
@@ -100,7 +101,8 @@ A conformant platform checks, in review or CI:
 
 - **Derivation, not judgment** — each attribution class maps to a mechanical predicate over recorded facts; no prompt content assigns a class (Tier 1 schema/code review).
 - **Enum, not boolean** — the attribution surface distinguishes at least the five classes; no rendering collapses governed/advisory/degraded into one positive signal (Tier 2).
-- **Co-write enforced** — an announcement referencing evidence cannot be emitted before the evidence exists; announcement and record are atomic (Tier 1 check).
+- **Announcement is a projection** — the in-band signal is rendered by the runtime from the record, never model-authored; no prompt content instructs the model to print an attribution indicator (Tier 1 review).
+- **Reserved classes honored** — no class is emitted whose deriving predicate is unimplemented; the transitional window is named in the consumer doctrine (Tier 1 schema; Tier 2 doctrine).
 - **Append-only, session-scoped, reconstructable** — the record store is `O_APPEND`-disciplined, spans runless turns, and a session's history renders from it offline (Tier 1).
 - **Never gates** — no code path blocks a turn on attribution failure (Tier 1).
 - **The limit is documented** — consumer-facing doctrine states what the absence of a warning does and does not prove (Tier 2).
@@ -140,17 +142,19 @@ This APR introduces **no new component-metadata field**, consistent with APR-024
 
 ## References
 
-External sources referenced in this APR; see *Relationship to established patterns* for how each relates. The originating field experience — a draft ADR of a promptware framework in private development (2026-07-27) — is described in the Motivation and is not publicly linkable.
+External sources referenced in this APR; see *Relationship to established patterns* for how each relates.
 
-1. SLSA. *Supply-chain Levels for Software Artifacts — provenance and attestation model*. <https://slsa.dev/>
-2. in-toto. *A framework to secure the integrity of software supply chains (attestations)*. <https://in-toto.io/>
-3. C2PA. *Coalition for Content Provenance and Authenticity — Content Credentials*. <https://c2pa.org/>
-4. Felt, A. P. et al. *Rethinking Connection Security Indicators*. SOUPS, 2016. <https://www.usenix.org/conference/soups2016/technical-sessions/presentation/porter-felt>
-5. Schechter, S. et al. *The Emperor's New Security Indicators*. IEEE S&P, 2007. <https://ieeexplore.ieee.org/document/4223213>
-6. European Parliament and Council. *Regulation (EU) 2024/1689 (Artificial Intelligence Act)* — Art. 50, Transparency obligations. 2024. <https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng>
+1. Maxios, D. *SpecOrigin — ADR-019: Route attribution — the operator can always tell what answered* (incl. the 2026-07-27/28 amendments: reserved classes, unconditional stamping with supersession, runtime-rendered indicator). SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+2. SLSA. *Supply-chain Levels for Software Artifacts — provenance and attestation model*. <https://slsa.dev/>
+3. in-toto. *A framework to secure the integrity of software supply chains (attestations)*. <https://in-toto.io/>
+4. C2PA. *Coalition for Content Provenance and Authenticity — Content Credentials*. <https://c2pa.org/>
+5. Felt, A. P. et al. *Rethinking Connection Security Indicators*. SOUPS, 2016. <https://www.usenix.org/conference/soups2016/technical-sessions/presentation/porter-felt>
+6. Schechter, S. et al. *The Emperor's New Security Indicators*. IEEE S&P, 2007. <https://ieeexplore.ieee.org/document/4223213>
+7. European Parliament and Council. *Regulation (EU) 2024/1689 (Artificial Intelligence Act)* — Art. 50, Transparency obligations. 2024. <https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng>
 
 ## Change log
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
+| 0.2.0 | 2026-07-30 | Draft | Field-driven strengthening from the ADR-019 amendments (2026-07-27/28): (1) the in-band announcement is **rendered by the runtime from the record, never model-authored** — live testing showed model-emitted indicators are unreliable even when instructed, confirming the projection form of the co-write rule; (2) R15's strongest form is **unconditional stamping with supersession**, making absence-as-evidence two-sided; (3) **reserved classes** — a class is not emitted before its deriving predicate exists, and the transitional window is named in doctrine; the padlock caveat extended to advisory-record absence on recorder-less channels. SpecOrigin named in References (private; publication planned). |
 | 0.1.0 | 2026-07-27 | Draft | Initial draft published as APR-025, per proposal issue #41. Surfaced by adopter field experience (SpecOrigin draft ADR-019, 2026-07-27). Registers runtime obligation R15 with APR-018. |

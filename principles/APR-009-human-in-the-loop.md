@@ -4,7 +4,7 @@ title: "A Human-in-the-Loop Oversight-Placement Principle for Promptware"
 abstract: "Place human oversight by reversibility and blast radius: irreversible/high-blast actions get plan-and-approve (before); reversible/low-blast get fire-and-judge (after). Unknown defaults to irreversible; safety floors are never sampled away; long runs batch questions to declared checkpoints."
 status: Draft
 class: architectural
-version: 0.3.0
+version: 0.3.1
 principals:
   - D. Maxios
 generative-contributors:
@@ -184,10 +184,12 @@ Component-metadata fields this APR owns, registered per [APR-014 §The metadata 
 
 External sources referenced in this APR; see *Relationship to established patterns* for how each relates.
 
-1. European Parliament and Council. *Regulation (EU) 2024/1689 (Artificial Intelligence Act)* — Art. 14, Human oversight. 2024. <https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng>
-2. NIST. *AI Risk Management Framework (AI RMF 1.0)*. <https://www.nist.gov/itl/ai-risk-management-framework>
-3. Christiano, P. et al. *Deep Reinforcement Learning from Human Preferences*. arXiv:1706.03741, 2017. <https://arxiv.org/abs/1706.03741>
-4. Bezos, J. *Letter to Shareholders* — Type 1/Type 2 decisions (one-way vs. two-way doors). Amazon. <https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders>
+1. Maxios, D. *SpecOrigin — ADR-015: Planning effort — budget-denominated tiers, enforced caps, plan-time cost estimates*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+2. Maxios, D. *SpecOrigin — ADR-016: Scheduled verification checkpoints — the four-phase capability template*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+3. European Parliament and Council. *Regulation (EU) 2024/1689 (Artificial Intelligence Act)* — Art. 14, Human oversight. 2024. <https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng>
+4. NIST. *AI Risk Management Framework (AI RMF 1.0)*. <https://www.nist.gov/itl/ai-risk-management-framework>
+5. Christiano, P. et al. *Deep Reinforcement Learning from Human Preferences*. arXiv:1706.03741, 2017. <https://arxiv.org/abs/1706.03741>
+6. Bezos, J. *Letter to Shareholders* — Type 1/Type 2 decisions (one-way vs. two-way doors). Amazon. <https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders>
 
 ## Adoption notes
 
@@ -200,6 +202,7 @@ External sources referenced in this APR; see *Relationship to established patter
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
+| 0.3.1 | 2026-07-30 | Draft | Added SpecOrigin ADR reference(s) — the adopter field source, named per the principal's direction (currently a private repository; publication is planned). No semantic change. |
 | 0.3.0 | 2026-07-27 | Draft | **Predicted cost joins the plan-and-approve payload** (SHOULD, where estimable): an operator cannot oversee a number they cannot see — field case: a 23-action plan approved with no cost shown ran 13.8 h. Estimates render as ranges with confidence/sample count, never unmeasured point values ("a guess wearing a number"); critical-path headline where dependencies are declared; anchoring offers carry their price. Surfaced by adopter field experience (SpecOrigin ADR-015 D3.1 revision, 2026-07-27). |
 | 0.2.0 | 2026-07-26 | Draft | Added §When judgment happens: **scheduled checkpoints** for long-running runs (declared at plan time; deferrable questions batch to the next checkpoint; blocking ones follow APR-017 escalation; staged phase-boundary approval), and **AI-substituted judging** under two hard conditions (isolated non-producer dispatch; recorded substitution that never satisfies the safety floor). Added the **anchoring** fatigue lever (minimal default selection, dependency-aware deselection). Surfaced by adopter field experience (SpecOrigin draft ADRs 015/016, 2026-07-26). Added APR-017 to `related`. |
 | 0.1.0 | 2026-05-31 | Draft | Initial draft published as APR-009. |
