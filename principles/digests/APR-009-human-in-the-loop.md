@@ -1,6 +1,6 @@
 # APR-009 — Human-in-the-Loop Oversight Placement — Digest
 
-> **Generated digest of [APR-009 — A Human-in-the-Loop Oversight-Placement Principle for Promptware](../APR-009-human-in-the-loop.md) v0.3.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-009 — A Human-in-the-Loop Oversight-Placement Principle for Promptware](../APR-009-human-in-the-loop.md) v0.3.1.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** Place human oversight by reversibility and blast radius: irreversible/high-blast actions get plan-and-approve (before); reversible/low-blast get fire-and-judge (after). Unknown defaults to irreversible; safety floors are never sampled away; long runs batch questions to declared checkpoints.
 
@@ -49,4 +49,4 @@ Reversibility declared on every overseeable action (unknown → irreversible) ·
 Not a UX/workflow-engine spec · not the autonomy-level definition (ASPECT defines levels; this defines which mode a level selects) · not a guarantee against human error (ensures the human is informed and correctly placed) · not access control/authn (who *may* approve is platform authorization) · not for read-only/advisory agents (the human is already the actor).
 
 ---
-*Source: [APR-009 — A Human-in-the-Loop Oversight-Placement Principle for Promptware](../APR-009-human-in-the-loop.md) v0.3.0 · regenerate this digest whenever the source changes.*
+*Source: [APR-009 — A Human-in-the-Loop Oversight-Placement Principle for Promptware](../APR-009-human-in-the-loop.md) v0.3.1 · regenerate this digest whenever the source changes.*

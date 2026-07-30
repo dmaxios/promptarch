@@ -4,7 +4,7 @@ title: "A Code/Prompt Boundary Principle for Promptware"
 abstract: "Places deterministic, verifiable, or safety-critical behavior in code and open-ended judgment in prompts, with an explicit, typed, testable seam at every code/prompt crossing — so each behavior is verified the right way and no safety decision rests silently on a model."
 status: Draft
 class: architectural
-version: 0.2.0
+version: 0.2.1
 principals:
   - D. Maxios
 generative-contributors:
@@ -183,18 +183,21 @@ Component-metadata fields this APR owns, registered per [APR-014 §The metadata 
 
 External sources referenced in this APR; see §9 *Relationship to established patterns* for how each relates.
 
-1. Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels (RFC 2119 / BCP 14)*. IETF, 1997. <https://datatracker.ietf.org/doc/html/rfc2119>
-2. Bernhardt, G. *Boundaries* (functional core, imperative shell). Talk, 2012. <https://www.destroyallsoftware.com/talks/boundaries>
-3. Levin, R., Cohen, E., Corwin, W., Pollack, F., and Wulf, W. *Policy/mechanism separation in Hydra*. Proc. 5th ACM Symposium on Operating Systems Principles (SOSP), 1975.
-4. Cockburn, A. *Hexagonal Architecture (Ports and Adapters)*. 2005. <https://alistair.cockburn.us/hexagonal-architecture/>
-5. Schick, T. et al. *Toolformer: Language Models Can Teach Themselves to Use Tools*. arXiv:2302.04761, 2023. <https://arxiv.org/abs/2302.04761>
-6. Yao, S. et al. *ReAct: Synergizing Reasoning and Acting in Language Models*. arXiv:2210.03629, 2022. <https://arxiv.org/abs/2210.03629>
-7. Garcez, A. d'Avila and Lamb, L. C. *Neurosymbolic AI: The 3rd Wave*. arXiv:2012.05876, 2020. <https://arxiv.org/abs/2012.05876>
+1. Maxios, D. *SpecOrigin — ADR-014: Dependency modes, recorded degradation, and coverage-carrying verdicts*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+2. Maxios, D. *SpecOrigin — ADR-016: Scheduled verification checkpoints*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+3. Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels (RFC 2119 / BCP 14)*. IETF, 1997. <https://datatracker.ietf.org/doc/html/rfc2119>
+4. Bernhardt, G. *Boundaries* (functional core, imperative shell). Talk, 2012. <https://www.destroyallsoftware.com/talks/boundaries>
+5. Levin, R., Cohen, E., Corwin, W., Pollack, F., and Wulf, W. *Policy/mechanism separation in Hydra*. Proc. 5th ACM Symposium on Operating Systems Principles (SOSP), 1975.
+6. Cockburn, A. *Hexagonal Architecture (Ports and Adapters)*. 2005. <https://alistair.cockburn.us/hexagonal-architecture/>
+7. Schick, T. et al. *Toolformer: Language Models Can Teach Themselves to Use Tools*. arXiv:2302.04761, 2023. <https://arxiv.org/abs/2302.04761>
+8. Yao, S. et al. *ReAct: Synergizing Reasoning and Acting in Language Models*. arXiv:2210.03629, 2022. <https://arxiv.org/abs/2210.03629>
+9. Garcez, A. d'Avila and Lamb, L. C. *Neurosymbolic AI: The 3rd Wave*. arXiv:2012.05876, 2020. <https://arxiv.org/abs/2012.05876>
 
 ## Change log
 
 | Version | Date | Status | Change |
 |---|---|---|---|
+| 0.2.1 | 2026-07-30 | Draft | Added SpecOrigin ADR reference(s) — the adopter field source, named per the principal's direction (currently a private repository; publication is planned). No semantic change. |
 | 0.1.0 | 2026-05-29 | Draft | Initial draft published as APR-003. |
 | 0.1.1 | 2026-05-30 | Draft | Added References section. No semantic change. |
 | 0.1.2 | 2026-05-30 | Draft | Added `abstract` frontmatter field. No semantic change. |

@@ -1,6 +1,6 @@
 # APR-003 — Code/Prompt Boundary — Digest
 
-> **Generated digest of [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.0.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
+> **Generated digest of [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.1.** The full APR is authoritative — read it for motivation, prior art, and worked detail. Do not edit by hand.
 
 **Abstract.** Places deterministic, verifiable, or safety-critical behavior in code and open-ended judgment in prompts, with an explicit, typed, testable seam at every code/prompt crossing — so each behavior is verified the right way and no safety decision rests silently on a model.
 
@@ -51,4 +51,4 @@ Both values name the same axis (content form), matching this principle's *Code/P
 Not "minimize AI" (it's mode-matching — forcing genuine judgment into brittle rules violates it too) · not a runtime/execution model · not a tool-use spec (function-calling is one *mechanism* for the seam) · not a verification framework (it says *which* test/eval, not the tooling) · not a security framework (it gates safety-critical decisions but doesn't provide access control or injection defense).
 
 ---
-*Source: [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.0 · regenerate this digest whenever the source changes.*
+*Source: [APR-003 — A Code/Prompt Boundary Principle for Promptware](../APR-003-code-prompt-boundary.md) v0.2.1 · regenerate this digest whenever the source changes.*

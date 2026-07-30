@@ -4,7 +4,7 @@ title: "A Coverage-Honest Verdict Principle for Promptware"
 abstract: "Every verdict carries orthogonal severity (what was found) and coverage (what was examined), coverage computed from recorded gap facts over the check's input closure. A clean pass over an incomplete closure is inexpressible, and every gap names the action that would close it. Kills the vacuous pass."
 status: Draft
 class: architectural
-version: 0.1.0
+version: 0.1.1
 principals:
   - D. Maxios
 generative-contributors:
@@ -131,14 +131,18 @@ This APR introduces **no new component-metadata field**, consistent with APR-015
 
 ## References
 
-External sources referenced in this APR; see *Relationship to established patterns* for how each relates. The originating field experience — three draft ADRs of a promptware framework in private development (2026-07-26), grounded in an instrumented run — is described in the Motivation; it is not publicly linkable, and is recorded here per the honesty-over-citation rule of the APR template.
+External sources referenced in this APR; see *Relationship to established patterns* for how each relates. The originating field experience — the SpecOrigin ADRs below, grounded in an instrumented run — is described in the Motivation.
 
-1. IAASB. *ISA 705 (Revised) — Modifications to the Opinion in the Independent Auditor's Report*. <https://www.iaasb.org/publications/international-standard-auditing-isa-705-revised-modifications-opinion-independent-auditor-s-report>
-2. Marick, B. *How to Misuse Code Coverage*. 1999. <http://www.exampler.com/testing-com/writings/coverage.pdf>
-3. Jones, C. B. *Tentative Steps Toward a Development Method for Interfering Programs* (assume-guarantee reasoning). ACM TOPLAS 5(4), 1983. <https://doi.org/10.1145/69575.69577>
+1. Maxios, D. *SpecOrigin — ADR-014: Dependency modes, recorded degradation, and coverage-carrying verdicts*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+2. Maxios, D. *SpecOrigin — ADR-015: Planning effort*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+3. Maxios, D. *SpecOrigin — ADR-016: Scheduled verification checkpoints*. SpecOrigin framework, 2026. *(Currently a private repository; publication is planned.)*
+4. IAASB. *ISA 705 (Revised) — Modifications to the Opinion in the Independent Auditor's Report*. <https://www.iaasb.org/publications/international-standard-auditing-isa-705-revised-modifications-opinion-independent-auditor-s-report>
+5. Marick, B. *How to Misuse Code Coverage*. 1999. <http://www.exampler.com/testing-com/writings/coverage.pdf>
+6. Jones, C. B. *Tentative Steps Toward a Development Method for Interfering Programs* (assume-guarantee reasoning). ACM TOPLAS 5(4), 1983. <https://doi.org/10.1145/69575.69577>
 
 ## Change log
 
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
+| 0.1.1 | 2026-07-30 | Draft | Added SpecOrigin ADR reference(s) — the adopter field source, named per the principal's direction (currently a private repository; publication is planned). No semantic change. |
 | 0.1.0 | 2026-07-26 | Draft | Initial draft published as APR-024, per proposal issue #34. Surfaced by adopter field experience (SpecOrigin draft ADRs 014/015/016, 2026-07-26); independently re-derived by the apr-conformance reference skill. |
